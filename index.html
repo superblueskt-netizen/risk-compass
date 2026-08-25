@@ -188,18 +188,7 @@
   }
 
   .donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  #donut {
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    position: relative;
-  }
-  #donut::after {
-    content: '';
-    position: absolute;
-    inset: 32px;
-    border-radius: 50%;
-    background: var(--panel);
-  }
+  #donutCanvas { display: block; }
   .donut-center {
     position: absolute;
     inset: 32px;
@@ -209,6 +198,7 @@
     flex-direction: column;
     text-align: center;
     z-index: 2;
+    pointer-events: none;
   }
   .donut-center .amt { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
 
@@ -391,7 +381,7 @@
     <div class="result-grid">
       <div class="donut-wrap">
         <div style="position:relative; width:200px; height:200px;">
-          <div id="donut"></div>
+          <canvas id="donutCanvas" width="200" height="200"></canvas>
           <div class="donut-center">
             <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-dim);">투자금액</div>
             <div class="amt" id="donutAmount">-</div>
@@ -626,18 +616,44 @@
     document.getElementById('liveVol').textContent = `±${stats.vol.toFixed(1)}%`;
   }
 
+  // CSS 커스텀 프로퍼티(--stock 등)를 실제 hex 색상값으로 변환해 캐싱
+  // (canvas의 fillStyle은 var(--x)를 직접 해석하지 못하기 때문에 필요)
+  function resolveCssColor(varExpr) {
+    const match = /var\((--[\w-]+)\)/.exec(varExpr);
+    if (!match) return varExpr;
+    return getComputedStyle(document.documentElement).getPropertyValue(match[1]).trim();
+  }
+
   function drawDonut() {
-    const donut = document.getElementById('donut');
-    let acc = 0;
-    const stops = [];
+    const canvas = document.getElementById('donutCanvas');
+    const ctx = canvas.getContext('2d');
+    const cx = 100, cy = 100, outerR = 100, innerR = 68;
+
+    ctx.clearRect(0, 0, 200, 200);
+
+    let startAngle = -Math.PI / 2; // 12시 방향부터 시작
     Object.keys(currentAlloc).forEach(k => {
       const pct = currentAlloc[k];
       if (pct <= 0) return;
-      const start = acc, end = acc + pct;
-      stops.push(`${ASSET_META[k].color} ${start * 3.6}deg ${end * 3.6}deg`);
-      acc = end;
+      const sweep = (pct / 100) * Math.PI * 2;
+      const endAngle = startAngle + sweep;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, outerR, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = resolveCssColor(ASSET_META[k].color);
+      ctx.fill();
+
+      startAngle = endAngle;
     });
-    donut.style.background = `conic-gradient(${stops.join(', ')})`;
+
+    // 가운데를 패널 배경색으로 뚫어서 도넛 모양 완성
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
   }
 
   function renderAllocList() {
