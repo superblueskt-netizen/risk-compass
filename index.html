@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>포트폴리오 배분 참고 도구</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #141a24;
+    --panel-2: #1b2330;
+    --border: #29323f;
+    --text: #e8edf4;
+    --text-dim: #8b96a5;
+    --stock: #4d8bff;
+    --bond: #35c8a8;
+    --gold: #f2b53c;
+    --crypto: #b57bff;
+    --cash: #7e8aa0;
+    --warn: #ff8a5b;
+    --radius: 12px;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image: radial-gradient(circle at 20% 0%, rgba(77,139,255,0.07), transparent 45%),
+                       radial-gradient(circle at 90% 30%, rgba(181,123,255,0.05), transparent 40%);
+    color: var(--text);
+    font-family: var(--font-body);
+  }
+
+  header {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 32px 20px 10px;
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--stock);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 4.4vw, 32px);
+    margin: 0 0 10px;
+  }
+  .disclaimer {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: rgba(255,138,91,0.08);
+    border: 1px solid rgba(255,138,91,0.3);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 12.5px;
+    color: #ffcdb0;
+    line-height: 1.5;
+    margin-top: 14px;
+  }
+  .disclaimer b { color: var(--warn); }
+
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 20px 20px 70px;
+    display: grid;
+    gap: 20px;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+  }
+  .panel h2 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+  .panel .sub {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin: 0 0 18px;
+  }
+
+  /* 설문 */
+  .quiz-q { margin-bottom: 22px; }
+  .quiz-q:last-child { margin-bottom: 0; }
+  .quiz-q .q-label {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .opt-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all 0.15s;
+  }
+  .opt-btn:hover { border-color: var(--stock); color: var(--text); }
+  .opt-btn.selected {
+    background: rgba(77,139,255,0.15);
+    border-color: var(--stock);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .amount-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .amount-row input[type=text] {
+    flex: 1;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .amount-row span { font-size: 13px; color: var(--text-dim); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--stock), #6f6bff);
+    color: #fff;
+    border: none;
+    padding: 13px 20px;
+    border-radius: 9px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+
+  /* 결과 */
+  #resultSection { display: none; }
+  .result-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .profile-badge {
+    font-family: var(--font-display);
+    font-size: 20px;
+  }
+  .profile-badge .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 30px;
+    align-items: center;
+  }
+  @media (max-width: 640px) {
+    .result-grid { grid-template-columns: 1fr; }
+  }
+
+  .donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  #donut {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    position: relative;
+  }
+  #donut::after {
+    content: '';
+    position: absolute;
+    inset: 32px;
+    border-radius: 50%;
+    background: var(--panel);
+  }
+  .donut-center {
+    position: absolute;
+    inset: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    z-index: 2;
+  }
+  .donut-center .amt { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
+
+  .alloc-list { display: flex; flex-direction: column; gap: 10px; }
+  .alloc-row {
+    display: grid;
+    grid-template-columns: 14px 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .alloc-dot { width: 12px; height: 12px; border-radius: 4px; }
+  .alloc-name { font-weight: 600; }
+  .alloc-pct { font-family: var(--font-mono); color: var(--text-dim); width: 46px; text-align: right; }
+  .alloc-amt { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-dim); min-width: 100px; text-align: right; }
+  .alloc-meta {
+    grid-column: 2 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin-top: -2px;
+  }
+  .alloc-meta .ret { font-family: var(--font-mono); }
+  .risk-badge {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+  .risk-badge[data-lv="0"] { color: #8fd6a8; border-color: rgba(143,214,168,0.4); }
+  .risk-badge[data-lv="1"] { color: #7fd0ff; border-color: rgba(127,208,255,0.4); }
+  .risk-badge[data-lv="2"] { color: #ffd479; border-color: rgba(255,212,121,0.4); }
+  .risk-badge[data-lv="3"] { color: #ffa579; border-color: rgba(255,165,121,0.4); }
+  .risk-badge[data-lv="4"] { color: #ff8fa3; border-color: rgba(255,143,163,0.4); }
+  .alloc-slider { grid-column: 1 / -1; }
+  .alloc-slider input[type=range] { width: 100%; accent-color: var(--stock); }
+
+  .rebalance-hint {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 640px) { .summary-cards { grid-template-columns: 1fr; } }
+  .summary-card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .summary-label { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+  .summary-value { font-family: var(--font-display); font-size: 22px; }
+  .summary-value.accent-green { color: var(--bond); }
+  .summary-value.accent-orange { color: var(--warn); }
+  .summary-sub { font-size: 10.5px; color: var(--text-dim); margin-top: 4px; }
+
+  /* 통계 표 */
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-dim); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.4px; }
+  td.num { font-family: var(--font-mono); }
+  .src-note { font-size: 11px; color: var(--text-dim); margin-top: 10px; line-height: 1.6; }
+
+  footer {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Portfolio Reference Tool</div>
+  <h1>📊 포트폴리오 배분 참고 도구</h1>
+  <p style="color:var(--text-dim); font-size:13.5px; margin:0;">주식·채권·금·코인·현금성자산의 과거 통계를 바탕으로, 위험성향에 맞는 배분 예시를 보여드립니다.</p>
+  <div class="disclaimer">
+    ⚠️ <span><b>투자자문이 아닙니다.</b> 이 도구는 공개된 과거 통계를 참고용으로 정리해서 보여줄 뿐이며, 특정 종목이나 상품을 추천하지 않습니다.
+    과거 수익률은 미래 수익률을 보장하지 않고, 실제 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다. 필요하다면 금융투자업 등록된 전문가와 상담하세요.</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- 설문 -->
+  <section class="panel" id="quizPanel">
+    <h2>1. 몇 가지만 답해주세요</h2>
+    <p class="sub">정답은 없어요 — 본인 상황에 가장 가까운 걸 고르시면 됩니다.</p>
+
+    <div class="quiz-q">
+      <div class="q-label">투자 기간을 얼마나 예상하시나요?</div>
+      <div class="opt-group" data-q="horizon">
+        <button class="opt-btn" data-v="1">1년 이내</button>
+        <button class="opt-btn" data-v="2">1~3년</button>
+        <button class="opt-btn" data-v="3">3~10년</button>
+        <button class="opt-btn" data-v="4">10년 이상</button>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="q-label">투자한 돈이 1년 안에 -20% 된다면?</div>
+      <div class="opt-group" data-q="lossTolerance">
+        <button class="opt-btn" data-v="1">바로 팔고 손절한다</button>
+        <button class="opt-btn" data-v="2">불안하지만 지켜본다</button>
+        <button class="opt-btn" data-v="3">장기 목표라 크게 신경 안 쓴다</button>
+        <button class="opt-btn" data-v="4">오히려 추가 매수를 고려한다</button>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="q-label">투자 경험은 어느 정도인가요?</div>
+      <div class="opt-group" data-q="experience">
+        <button class="opt-btn" data-v="1">거의 처음</button>
+        <button class="opt-btn" data-v="2">예금·적금 위주로 조금</button>
+        <button class="opt-btn" data-v="3">주식·펀드 투자 경험 있음</button>
+        <button class="opt-btn" data-v="4">채권·파생·코인 등 다양한 경험</button>
+      </div>
+    </div>
+
+    <div class="quiz-q">
+      <div class="q-label">투자 예정 금액 (원)</div>
+      <div class="amount-row">
+        <input type="text" id="amountInput" value="10,000,000" inputmode="numeric">
+        <span>원</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="calcBtn">배분 예시 계산하기 →</button>
+  </section>
+
+  <!-- 결과 -->
+  <section class="panel" id="resultSection">
+    <div class="result-head">
+      <div class="profile-badge">
+        <span id="profileName">-</span>
+        <span class="tag" id="profileScore">-</span>
+      </div>
+      <button class="opt-btn" id="retakeBtn">↺ 설문 다시하기</button>
+    </div>
+
+    <div class="result-grid">
+      <div class="donut-wrap">
+        <div style="position:relative; width:200px; height:200px;">
+          <div id="donut"></div>
+          <div class="donut-center">
+            <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-dim);">투자금액</div>
+            <div class="amt" id="donutAmount">-</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alloc-list" id="allocList"></div>
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="summary-label">현재 배분의 위험유형</div>
+        <div class="summary-value" id="liveRiskName">-</div>
+        <div class="summary-sub">설문 시작값: <span id="quizProfileRef">-</span></div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">최종 예상 연 수익률</div>
+        <div class="summary-value accent-green" id="liveReturn">-</div>
+        <div class="summary-sub">자산별 예상수익률의 가중평균</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">조합 변동성(종합 위험도)</div>
+        <div class="summary-value accent-orange" id="liveVol">-</div>
+        <div class="summary-sub">자산 간 상관관계 반영 추정치</div>
+      </div>
+    </div>
+
+    <div class="rebalance-hint">🎚️ 슬라이더로 비중을 직접 조정할 수 있어요. 하나를 바꾸면 나머지가 자동으로 맞춰지고, 위 위험유형·수익률·변동성이 즉시 다시 계산됩니다.</div>
+  </section>
+
+  <!-- 근거 통계 -->
+  <section class="panel">
+    <h2>2. 배분의 근거 — 자산군별 과거 통계</h2>
+    <p class="sub">이 도구가 참고한 장기 평균 수치입니다. 실제 상품(ETF·펀드 등)의 수익률과는 다를 수 있습니다.</p>
+    <table>
+      <thead>
+        <tr><th>자산군</th><th>과거 연평균 수익률</th><th>연간 변동성(표준편차)</th><th>특징</th></tr>
+      </thead>
+      <tbody id="statsTable"></tbody>
+    </table>
+    <div class="src-note">
+      출처(대표값, 근사치): 주식 — S&P500 1928~2025 장기 연평균(NYU Stern/Damodaran, Fidelity) ·
+      채권 — 미국 10년 국채/장기채 1926년 이후 평균(Morningstar, Retirement Researcher) ·
+      금 — 최근 50년 평균(다수 소스 근사) · 코인 — 비트코인 최근 변동성(iShares/BlackRock, NYDIG, 2024~2025 기준) ·
+      현금성자산 — 미국 3개월 T-bill 평균(Morningstar). 코인은 자산 특성상 과거 수익률 변동폭이 극단적으로 커서
+      이 표의 수치를 그대로 미래 기대수익률로 사용하지 않았으며, 배분 비중도 국제 자산운용사들의 권고 범위(대략 0~5%)를 참고해 상한을 뒀습니다.
+      <br><br>
+      <b>최종 예상 수익률·조합 위험도 계산 방법:</b> 예상 수익률은 각 자산 예상수익률의 비중 가중평균입니다.
+      코인의 실제 과거 수익률(연 50~100%+)은 그대로 쓰면 결과가 크게 왜곡되므로, 계산에는 의도적으로 보수적인 값(연 15%)을 사용했습니다.
+      조합 위험도(변동성)는 개별 자산 변동성을 단순히 더하지 않고, 자산 간 상관관계(주식·채권 역상관, 금·코인 저상관 등 공개 연구자료 기반 근사치)를
+      반영한 포트폴리오 분산 공식으로 계산했습니다. 실제 상관관계는 시기에 따라 달라질 수 있어 참고용 추정치입니다.
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  본 도구는 교육·참고 목적으로 제공되며 금융투자업 등록 자문이 아닙니다. 산출된 배분은 하나의 예시일 뿐이며, 개인의 재무 상황·세금·수수료·환헤지 여부 등은 반영되지 않았습니다.
+</footer>
+
+<script>
+  /* ============================================================
+     1. 자산군 통계 (근사치, 출처는 화면 하단 표기)
+     ============================================================ */
+  const ASSET_META = {
+    stock:  { name: '주식',       color: 'var(--stock)',  return: '연 10.0%',  vol: '±16%', risk: '높음',     riskLv: 3, note: '장기 성장성 높으나 단기 변동 큼', retNum: 10.0, volNum: 16 },
+    bond:   { name: '채권',       color: 'var(--bond)',   return: '연 5.0%',   vol: '±9%',  risk: '낮음',     riskLv: 1, note: '주식과 낮은/역상관, 안정적 이자', retNum: 5.0,  volNum: 9 },
+    gold:   { name: '금',         color: 'var(--gold)',   return: '연 7.5%',   vol: '±15%', risk: '중간',     riskLv: 2, note: '인플레이션·위기 헤지 자산', retNum: 7.5,  volNum: 15 },
+    crypto: { name: '코인(비트코인)', color: 'var(--crypto)', return: '매우 높음(변동 극심)', vol: '±50%+', risk: '매우 높음', riskLv: 4, note: '상관성 낮으나 리스크 최상급, 비중 상한 적용', retNum: 15.0, volNum: 50 },
+    cash:   { name: '현금성자산', color: 'var(--cash)',   return: '연 3.3%',   vol: '±3%',  risk: '매우 낮음', riskLv: 0, note: '유동성 확보, 단기 방어', retNum: 3.3,  volNum: 3 }
+  };
+
+  // 자산 간 상관계수 (연구자료 기반 근사치: 주식-채권 역상관, 금-코인 거의 무상관 등)
+  const CORR = {
+    stock:  { stock: 1,    bond: -0.2, gold: 0.0, crypto: 0.3,  cash: 0 },
+    bond:   { stock: -0.2, bond: 1,    gold: 0.1, crypto: -0.1, cash: 0.1 },
+    gold:   { stock: 0.0,  bond: 0.1,  gold: 1,   crypto: 0.0,  cash: 0 },
+    crypto: { stock: 0.3,  bond: -0.1, gold: 0.0, crypto: 1,    cash: 0 },
+    cash:   { stock: 0,    bond: 0.1,  gold: 0,   crypto: 0,    cash: 1 }
+  };
+
+  // 실시간 위험유형 재분류 기준 (포트폴리오 변동성 기준, 5단계 명칭은 설문 프로필과 동일하게 통일)
+  const RISK_BANDS = [
+    { max: 5.4,  name: '안정형' },
+    { max: 7.1,  name: '안정추구형' },
+    { max: 9.5,  name: '위험중립형' },
+    { max: 12.0, name: '적극투자형' },
+    { max: Infinity, name: '공격투자형' }
+  ];
+
+  function computePortfolioStats(alloc) {
+    const keys = Object.keys(alloc);
+    let expReturn = 0;
+    keys.forEach(k => { expReturn += (alloc[k] / 100) * ASSET_META[k].retNum; });
+
+    let variance = 0;
+    keys.forEach(i => {
+      keys.forEach(j => {
+        const wi = alloc[i] / 100, wj = alloc[j] / 100;
+        variance += wi * wj * ASSET_META[i].volNum * ASSET_META[j].volNum * CORR[i][j];
+      });
+    });
+    const vol = Math.sqrt(Math.max(0, variance));
+    const riskName = RISK_BANDS.find(b => vol <= b.max).name;
+    return { expReturn, vol, riskName };
+  }
+
+  /* ============================================================
+     2. 위험성향 5단계 프로필 (설문 점수 → 프로필)
+        국내 금융투자 표준 위험성향 분류(안정형~공격투자형)를 참고해
+        구성. 코인은 국제 자산운용사 권고 범위(0~5%)를 넘지 않도록 상한.
+     ============================================================ */
+  const PROFILES = [
+    { key: 'conservative', name: '안정형',     range: [3, 4],   alloc: { stock: 8,  bond: 45, gold: 7,  cash: 40, crypto: 0 } },
+    { key: 'mod-cons',     name: '안정추구형', range: [5, 6],   alloc: { stock: 25, bond: 55, gold: 10, cash: 8,  crypto: 2 } },
+    { key: 'balanced',     name: '위험중립형', range: [7, 8],   alloc: { stock: 45, bond: 35, gold: 10, cash: 7,  crypto: 3 } },
+    { key: 'growth',       name: '적극투자형', range: [9, 10],  alloc: { stock: 65, bond: 20, gold: 8,  cash: 3,  crypto: 4 } },
+    { key: 'aggressive',   name: '공격투자형', range: [11, 12], alloc: { stock: 75, bond: 10, gold: 7,  cash: 3,  crypto: 5 } }
+  ];
+
+  const answers = { horizon: null, lossTolerance: null, experience: null };
+  let currentAlloc = null;
+  let investAmount = 10000000;
+
+  /* ============================================================
+     3. 설문 UI
+     ============================================================ */
+  document.querySelectorAll('.opt-group').forEach(group => {
+    const qKey = group.dataset.q;
+    group.querySelectorAll('.opt-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        answers[qKey] = parseInt(btn.dataset.v, 10);
+      });
+    });
+  });
+
+  document.getElementById('amountInput').addEventListener('input', e => {
+    const digits = e.target.value.replace(/[^0-9]/g, '');
+    const num = digits ? parseInt(digits, 10) : 0;
+    e.target.value = num ? num.toLocaleString('ko-KR') : '';
+    investAmount = num;
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    if (!answers.horizon || !answers.lossTolerance || !answers.experience) {
+      alert('세 가지 질문에 모두 답해주세요.');
+      return;
+    }
+    if (!investAmount || investAmount <= 0) {
+      alert('투자 예정 금액을 입력해주세요.');
+      return;
+    }
+    const score = answers.horizon + answers.lossTolerance + answers.experience;
+    const profile = PROFILES.find(p => score >= p.range[0] && score <= p.range[1]) || PROFILES[2];
+    currentAlloc = { ...profile.alloc };
+    document.getElementById('profileName').textContent = profile.name;
+    document.getElementById('profileScore').textContent = `설문 점수 ${score}/12`;
+    document.getElementById('quizProfileRef').textContent = profile.name;
+    renderResult();
+    document.getElementById('resultSection').style.display = 'block';
+    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.getElementById('retakeBtn').addEventListener('click', () => {
+    document.getElementById('resultSection').style.display = 'none';
+    document.getElementById('quizPanel').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  /* ============================================================
+     4. 결과 렌더 (도넛차트 + 슬라이더 목록)
+     ============================================================ */
+  function renderResult() {
+    document.getElementById('donutAmount').textContent = investAmount.toLocaleString('ko-KR') + '원';
+    drawDonut();
+    renderAllocList();
+    renderStatsTable();
+    updateLiveStats();
+  }
+
+  function updateLiveStats() {
+    const stats = computePortfolioStats(currentAlloc);
+    document.getElementById('liveRiskName').textContent = stats.riskName;
+    document.getElementById('liveReturn').textContent = `연 ${stats.expReturn.toFixed(1)}%`;
+    document.getElementById('liveVol').textContent = `±${stats.vol.toFixed(1)}%`;
+  }
+
+  function drawDonut() {
+    const donut = document.getElementById('donut');
+    let acc = 0;
+    const stops = [];
+    Object.keys(currentAlloc).forEach(k => {
+      const pct = currentAlloc[k];
+      if (pct <= 0) return;
+      const start = acc, end = acc + pct;
+      stops.push(`${ASSET_META[k].color} ${start * 3.6}deg ${end * 3.6}deg`);
+      acc = end;
+    });
+    donut.style.background = `conic-gradient(${stops.join(', ')})`;
+  }
+
+  function renderAllocList() {
+    const listEl = document.getElementById('allocList');
+    listEl.innerHTML = '';
+    Object.keys(currentAlloc).forEach(k => {
+      const meta = ASSET_META[k];
+      const pct = currentAlloc[k];
+      const amt = Math.round(investAmount * pct / 100);
+
+      const row = document.createElement('div');
+      row.className = 'alloc-row';
+      row.innerHTML = `
+        <span class="alloc-dot" style="background:${meta.color}"></span>
+        <span class="alloc-name">${meta.name}</span>
+        <span class="alloc-pct" id="pct-${k}">${pct}%</span>
+        <span class="alloc-amt">${amt.toLocaleString('ko-KR')}원</span>
+        <div class="alloc-meta">
+          <span class="ret">예상수익률 ${meta.return}</span>
+          <span class="risk-badge" data-lv="${meta.riskLv}">위험도 ${meta.risk}</span>
+        </div>
+        <div class="alloc-slider">
+          <input type="range" min="0" max="100" value="${pct}" data-asset="${k}">
+        </div>
+      `;
+      listEl.appendChild(row);
+    });
+
+    listEl.querySelectorAll('input[type=range]').forEach(slider => {
+      slider.addEventListener('input', e => onSliderChange(e.target.dataset.asset, parseInt(e.target.value, 10)));
+    });
+  }
+
+  // 슬라이더 하나를 바꾸면 나머지 항목들에 남은 비율을 기존 비중대로 재분배 (합계 100% 유지)
+  function onSliderChange(changedKey, newVal) {
+    const keys = Object.keys(currentAlloc);
+    const others = keys.filter(k => k !== changedKey);
+    const oldOthersSum = others.reduce((s, k) => s + currentAlloc[k], 0);
+    const remaining = 100 - newVal;
+
+    currentAlloc[changedKey] = newVal;
+    if (oldOthersSum <= 0) {
+      const share = Math.floor(remaining / others.length);
+      others.forEach((k, i) => currentAlloc[k] = i === others.length - 1 ? remaining - share * (others.length - 1) : share);
+    } else {
+      let assigned = 0;
+      others.forEach((k, i) => {
+        if (i === others.length - 1) {
+          currentAlloc[k] = remaining - assigned;
+        } else {
+          const v = Math.round(remaining * (currentAlloc[k] / oldOthersSum));
+          currentAlloc[k] = v;
+          assigned += v;
+        }
+      });
+    }
+
+    drawDonut();
+    document.getElementById('donutAmount').textContent = investAmount.toLocaleString('ko-KR') + '원';
+    keys.forEach(k => {
+      const pctEl = document.getElementById(`pct-${k}`);
+      if (pctEl) pctEl.textContent = currentAlloc[k] + '%';
+      const amtEl = pctEl?.parentElement.querySelector('.alloc-amt');
+      if (amtEl) amtEl.textContent = Math.round(investAmount * currentAlloc[k] / 100).toLocaleString('ko-KR') + '원';
+      const sliderEl = document.querySelector(`input[data-asset="${k}"]`);
+      if (sliderEl && k !== changedKey) sliderEl.value = currentAlloc[k];
+    });
+    updateLiveStats();
+  }
+
+  /* ============================================================
+     5. 근거 통계 표
+     ============================================================ */
+  function renderStatsTable() {
+    const tbody = document.getElementById('statsTable');
+    tbody.innerHTML = '';
+    Object.keys(ASSET_META).forEach(k => {
+      const m = ASSET_META[k];
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="alloc-dot" style="background:${m.color}; display:inline-block; margin-right:6px; vertical-align:middle;"></span>${m.name}</td>
+        <td class="num">${m.return}</td>
+        <td class="num">${m.vol}</td>
+        <td>${m.note}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  renderStatsTable();
+</script>
+</body>
+</html>
