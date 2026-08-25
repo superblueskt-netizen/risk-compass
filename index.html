@@ -585,8 +585,13 @@
 
       const a = document.createElement('a');
       const stamp = new Date().toISOString().slice(0, 10);
+      const stats = computePortfolioStats(currentAlloc);
+      const safeRiskName = stats.riskName.replace(/[\\/:*?"<>|]/g, ''); // 파일명에 못 쓰는 문자 제거
+      const amountLabel = investAmount >= 10000 ? `${Math.round(investAmount / 10000)}만원` : `${investAmount}원`;
+      // TODO(다음 작업자): 같은 날 여러 번 다운로드하면 파일명이 겹쳐서 이전 파일을 덮어씀.
+      // 초 단위 타임스탬프를 추가해서 중복을 막아야 함 (검사 12번 참고)
       a.href = URL.createObjectURL(blob);
-      a.download = `portfolio_result_${stamp}.png`;
+      a.download = `portfolio_result_${safeRiskName}_${amountLabel}_${stamp}.png`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     } catch (err) {
