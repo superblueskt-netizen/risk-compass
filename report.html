@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T05 — AI 인계 실습 비교 보고서</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #141a24; --panel-2: #1b2330; --border: #29323f;
+    --text: #e8edf4; --text-dim: #8b96a5; --accent: #4d8bff; --good: #35c8a8;
+    --warn: #ff8a5b; --radius: 12px;
+    --font-display: 'Segoe UI', 'Space Grotesk', sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body);
+    background-image: radial-gradient(circle at 20% 0%, rgba(77,139,255,0.07), transparent 45%);
+  }
+  header, main, footer { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+  header { padding-top: 32px; }
+  .kicker { font-family: var(--font-mono); font-size: 11px; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: var(--font-display); font-size: clamp(22px, 4vw, 30px); margin: 0 0 10px; }
+  .sub { color: var(--text-dim); font-size: 13.5px; line-height: 1.6; margin: 0 0 18px; }
+  .linkrow { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .linkrow a {
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; font-size: 12.5px; text-decoration: none;
+  }
+  .linkrow a:hover { border-color: var(--accent); }
+  main { padding-bottom: 60px; display: grid; gap: 22px; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+  .panel h2 { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; }
+  .panel .desc { font-size: 12.5px; color: var(--text-dim); margin: 0 0 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th, td { text-align: left; padding: 8px 9px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--text-dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+  td.num { font-family: var(--font-mono); }
+  .masked-tag {
+    display: inline-block; font-family: var(--font-mono); font-size: 10.5px; color: var(--warn);
+    border: 1px solid rgba(255,138,91,0.4); border-radius: 20px; padding: 2px 9px; margin-bottom: 12px;
+  }
+  .reveal { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border); font-size: 12.5px; color: var(--text-dim); }
+  .reveal b { color: var(--text); }
+  .criterion {
+    font-size: 14px; line-height: 1.6; background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; margin: 0 0 12px;
+  }
+  ol, ul { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.7; color: var(--text-dim); }
+  ol li b, ul li b { color: var(--text); }
+  .fourline { display: grid; gap: 10px; font-size: 13px; line-height: 1.6; }
+  .fourline .row { display: grid; grid-template-columns: 90px 1fr; gap: 10px; }
+  .fourline .tag { font-family: var(--font-mono); font-size: 11px; color: var(--accent); }
+  .pass .tag { color: var(--good); }
+  .fail .tag { color: var(--warn); }
+  footer { padding: 0 20px 40px; font-size: 11.5px; color: var(--text-dim); line-height: 1.6; }
+  code { font-family: var(--font-mono); background: var(--panel-2); padding: 1px 5px; border-radius: 4px; font-size: 11.5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">T05 · 대화가 끊겨도 이어지는 프로젝트</div>
+  <h1>AI 인계 실습 — 비교 보고서</h1>
+  <p class="sub">
+    "포트폴리오 배분 참고 도구"에 작은 개선(다운로드 파일명 개선) 하나를 두 AI 세션이 차례로 이어서
+    완성하게 하고, 새 대화가 인수인계 문서만으로 작업을 재개하는지 검증한 실습의 결과물입니다.
+    이 페이지 자체가 로그인 없이 열리는 공개 비교 보고서이며, 아래 모든 문서·소스 링크도 로그인 없이 열립니다.
+  </p>
+  <div class="linkrow">
+    <a href="https://superblueskt-netizen.github.io/risk-compass/">결과물(도구) 바로가기</a>
+    <a href="https://github.com/superblueskt-netizen/risk-compass">소스 저장소</a>
+    <a href="https://github.com/superblueskt-netizen/risk-compass/blob/main/TESTS.md">고정 검사 14개</a>
+    <a href="https://github.com/superblueskt-netizen/risk-compass/blob/main/HANDOFF.md">인수인계 문서</a>
+    <a href="https://github.com/superblueskt-netizen/risk-compass/blob/main/WORKLOG.md">작업 기록(WORKLOG)</a>
+  </div>
+</header>
+
+<main>
+
+  <section class="panel">
+    <h2>판정표 (이름 가림)</h2>
+    <p class="desc">공통 검사 14개, 공통 상한(시간 40분 · 요청 10회)을 같은 기준으로 적용했습니다. 실제 사용 서비스명은 아래 "이름 공개"에서만 밝힙니다.</p>
+    <span class="masked-tag">판정 구간 — 이름 가림</span>
+    <table>
+      <thead><tr><th>항목</th><th>Model 1</th><th>Model 2</th></tr></thead>
+      <tbody>
+        <tr><td>역할</td><td>기능 설계·구현 시작 (AI A)</td><td>인계 문서만 보고 이어받아 완료 (AI B)</td></tr>
+        <tr><td>시작→종료 버전(커밋)</td><td class="num">ce6012f → 3540f1d</td><td class="num">3540f1d → 4c2da40</td></tr>
+        <tr><td>소스 변경량</td><td class="num">+108 / -20줄</td><td class="num">+7 / -3줄</td></tr>
+        <tr><td>실제 작업시간</td><td class="num">약 33분28초 (2세션)</td><td class="num">약 10분31초 (1세션)</td></tr>
+        <tr><td>실제 요청/호출 수</td><td class="num">4회</td><td class="num">1회</td></tr>
+        <tr><td>공통 상한</td><td class="num">시간 40분 · 요청 10회</td><td class="num">시간 40분 · 요청 10회</td></tr>
+        <tr><td>검사 통과 수(14개 중)</td><td class="num">12개 (검사 1~12)</td><td class="num">14개 전체 (신규 기여: 13, 14)</td></tr>
+        <tr><td>오류 수(검사 1~10, FAIL 실행 회차)</td><td class="num">1회</td><td class="num">0회</td></tr>
+        <tr><td>인계 문서만으로 범위를 지켰는가</td><td>해당 없음(원 설계자)</td><td>예 — 명시 범위 외 미변경(diff 확인)</td></tr>
+        <tr><td>재작업 발생</td><td>있음(실사용 중 버그 발견)</td><td>없음(1회 제출로 종료)</td></tr>
+      </tbody>
+    </table>
+    <div class="reveal">
+      <b>이름 공개(판정에는 사용되지 않음)</b> — Model 1 = Claude (Sonnet 5, AI A) · Model 2 = Gemini (AI B, 다른 서비스)
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>도구 선택 기준</h2>
+    <p class="criterion">
+      작업 범위가 넓거나 실배포 환경에서 검증하며 버그를 찾아야 하는 단계는 Model 1(대화를 이어가며
+      붙잡고 있는 방식)에게 맡기고, "건드리면 안 되는 부분"까지 구체적으로 적은 인계 문서로 범위가
+      한 덩어리로 좁혀진 다음에만 Model 2(새 세션·새 모델)에게 넘긴다.
+    </p>
+    <ol>
+      <li>범위가 넓거나 실배포 환경 검증이 필요한 작업은 Model 1부터 쓰고, 범위가 한 덩어리로 좁혀지면 Model 2로 넘긴다.</li>
+      <li>인계 문서에 "건드리면 안 되는 부분"을 구체적으로 적으면 Model 2도 범위를 벗어나지 않는다 — 실제로 Model 2는 명시된 파일명 로직(+7/-3줄) 외 한 글자도 건드리지 않았다.</li>
+      <li>작업이 애매하면 Model 1을 유지하고, 같은 이유로 재작업이 2회 이상 반복되면 그때 잘게 쪼개 Model 2에게 넘긴다.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <h2>짧은 확인 방법</h2>
+    <p class="desc">2026-08-25 원 작업 종료 시점에 작성해둔 검증 안내서 내용 그대로입니다.</p>
+    <div class="fourline">
+      <div class="row"><span class="tag">① 위치</span><span>https://superblueskt-netizen.github.io/risk-compass/ — 설치·로그인 없이 바로 열리고, 첫 화면에서 위험성향 설문이 보임</span></div>
+      <div class="row"><span class="tag">② 행동</span><span>설문 3개(투자 기간·손실 감내도·투자 경험)에 답하고 금액 입력 후 "배분 예시 계산하기" → 슬라이더로 비중 조정 → "🖼️ 결과 이미지로 저장" (3단계 이내)</span></div>
+      <div class="row pass"><span class="tag">③ 통과</span><span>①에서 계산 즉시 도넛차트·위험유형·수익률·변동성이 나타나고, ②에서 슬라이더를 움직이면 비중이 자동 재분배되며 즉시 재계산되고, ③에서 받은 PNG에 화면과 같은 도넛차트·배분표가 담기고 파일명에 위험유형·금액·초단위 시각이 포함되어 여러 번 받아도 겹치지 않음(5초 내 연속 다운로드로 확인됨)</span></div>
+      <div class="row fail"><span class="tag">④ 실패</span><span>계산 버튼이 안 눌리거나(입력 누락 안내만 뜸), 이미지 저장이 안 되거나(시크릿 모드 등 다운로드 차단), 도넛차트가 이미지에서 안 보이거나, 슬라이더 조정 후 비중 합계가 100%가 아님</span></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>AI와 나의 판단</h2>
+    <p class="desc">2026-08-25 원 작업 종료 시점에 작성해둔 AI 사용 기록 그대로입니다.</p>
+    <ul>
+      <li><b>AI에게 맡긴 일</b> — PNG 다운로드 기능 구현, 실배포 후 발견된 도넛차트 버그 수정, 파일명 개선 기능의 설계·구현·인계 문서 작성을 Claude(AI A)에게, 파일명 중복 방지 코드 완성을 Gemini(AI B)에게 맡겼다.</li>
+      <li><b>직접 판단한 일</b> — 실제 배포 페이지에서 직접 설문→계산→다운로드를 실행해 도넛차트 버그를 발견해 보고했고, Gemini의 결과가 인계 문서 범위를 벗어나지 않았는지 Claude에게 diff로 대조 검증하도록 확인했다. (재검증 단계에서는 검사 입력·기대값 표, 인계 문서 실행 명령 오류, 시간 상한 미기록, 판정표 이름 가림 등 빠진 항목을 무엇으로 보완할지도 직접 정했다.)</li>
+      <li><b>AI 제안을 따르지 않은 일</b> — 애초 계획은 Claude가 정상 케이스(검사 1~4)를 미완성으로 남기고 Gemini에게 넘기는 것이었지만, 실배포본에서 버그를 발견하자마자 Claude가 바로 수정하게 했고, 그 결과 Gemini에게 넘길 새 개선 과제(파일명 개선)를 별도로 다시 만들도록 요구했다.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  T05 실습 · 2026-08-25 진행(기능 구현, 검증 안내서·AI 사용기록 작성 포함), 2026-09-01 재검증(검사 입력/기대값 명시, 인계 문서 실행 명령 오류 수정, 시간 상한 사후 산정, 이름 가림 판정표 보강 — 확인 방법·AI 판단은 8/25 원문 그대로 반영).
+  전체 대화 전문은 제출하지 않으며, 고정 검사·집계 결과·인수인계 문서·판단만 남깁니다.
+</footer>
+
+</body>
+</html>
